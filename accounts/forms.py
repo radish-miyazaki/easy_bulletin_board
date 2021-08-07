@@ -35,3 +35,8 @@ class RegisterForm(forms.ModelForm):
 
         user.save()
         return user
+
+
+class LoginForm(forms.Form):
+    email = forms.CharField(label='メールアドレス')
+    password = forms.CharField(label='パスワード', widget=forms.PasswordInput)

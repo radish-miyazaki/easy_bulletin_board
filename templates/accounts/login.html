@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
-
 {% block content %}
+	<h2>Login page</h2>
+	<hr />
 	{% if messages %}
 		{% for message in messages %}
 			<div>
@@ -8,5 +9,9 @@
 			</div>
 		{% endfor %}
 	{% endif %}
-	ホーム画面
+	<form method="post">
+		{% csrf_token %}
+		{{ login_form.as_p }}
+		<input class="btn btn-primary" type="submit" value="Login" />
+	</form>
 {% endblock %}
