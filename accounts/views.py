@@ -31,6 +31,7 @@ def register(request):
     )
 
 
+# activate_user: ユーザをアクティブにする
 def activate_user(request, token):
     UserActivateTokens.objects.activate_user_by_token(token)
     return render(
