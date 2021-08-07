@@ -9,6 +9,11 @@ from datetime import datetime, timedelta
 from django.contrib.auth.models import UserManager
 
 
+"""
+ Primary classes.
+"""
+
+
 class Users(AbstractBaseUser, PermissionsMixin):
     # Fields
     username = models.CharField(max_length=255)
@@ -28,7 +33,26 @@ class Users(AbstractBaseUser, PermissionsMixin):
         db_table = 'users'
 
 
-# データ操作を行うクラス（Manager）
+class Comments(models):
+    comment = models.TextField()
+    user = models.ForeignKey(
+        'Users', on_delete=models.CASCADE,
+    )
+
+
+class Themes(models.Model):
+    title = models.CharField(max_length=50)
+    user = models.ForeignKey(
+        'Users', on_delete=models.CASCADE,
+    )
+    comments = models.ManyToManyField(Comments)
+
+
+"""
+ Classes to activate user.
+"""
+
+
 class UserActivateTokensManage(models.Manager):
     def activate_user_by_token(self, token):
         user_activate_token = self.filter(
@@ -40,6 +64,7 @@ class UserActivateTokensManage(models.Manager):
         user.save()
 
 
+# ユーザをアクティブにするためのモデル
 class UserActivateTokens(models.Model):
     token = models.UUIDField(db_index=True)
     expired_at = models.DateTimeField()
@@ -62,5 +87,6 @@ def publish_token(sender, instance, **kwargs):
         expired_at=datetime.now() + timedelta(days=1),
     )
 
-    # FIXME: 本来はメールで送信する箇所。また、ここでは固定値で指定しているがenvに切り出す。
+    # FIXME: 本来はメールで送信する箇所。
+    # FIXME: ここでは固定値で指定しているがenvに切り出す。
     print(f'http://localhost:3000/accounts/activate/{user_activate_token.token}')
