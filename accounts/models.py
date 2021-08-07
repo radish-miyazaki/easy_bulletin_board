@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser, PermissionsMixin
 )
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from uuid import uuid4
+from datetime import datetime, timedelta
 
 
 class Users(AbstractBaseUser, PermissionsMixin):
@@ -30,3 +34,16 @@ class UserActivateTokens(models.Model):
 
     class Meta:
         db_table = 'user_activate_tokens'
+
+
+# モデルが新規追加されるたびに呼び出されるメソッド（シグナル）
+@receiver(post_save, sender=Users)
+def publish_token(sender, instance, **kwargs):
+    user_activate_token = UserActivateTokens.objects.create(
+        user=instance,
+        token=str(uuid4()),
+        expired_at=datetime.now() + timedelta(days=1),
+    )
+
+    # FIXME: 本来はメールで送信する箇所。また、ここでは固定値で指定しているがenvに切り出す。
+    print(f'http://localhost:3000/accounts/activate/{user_activate_token.token}')
