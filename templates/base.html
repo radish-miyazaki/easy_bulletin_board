@@ -20,6 +20,9 @@
 				<a class="navbar-brand" href="{% url 'accounts:logout' %}">
 					Logout
 				</a>
+				<a class="navbar-brand" href="{% url 'accounts:edit' %}">
+					Profile
+				</a>
 			{% else %}
 				<a class="navbar-brand" href="{% url 'accounts:register' %}">
 					Register

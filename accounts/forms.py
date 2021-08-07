@@ -40,3 +40,40 @@ class RegisterForm(forms.ModelForm):
 class LoginForm(forms.Form):
     email = forms.CharField(label='メールアドレス')
     password = forms.CharField(label='パスワード', widget=forms.PasswordInput)
+
+
+class UserEditForm(forms.ModelForm):
+    username = forms.CharField(label='名前')
+    age = forms.IntegerField(label='年齢', min_value=0)
+    email = forms.EmailField(label='メールアドレス')
+    picture = forms.FileField(label='アイコン', required=False)
+
+    class Meta:
+        model = Users
+        fields = ('username', 'age', 'email', 'picture')
+
+
+class PasswordChangeForm(forms.ModelForm):
+    password = forms.CharField(label='パスワード', widget=forms.PasswordInput)
+    confirm_password = forms.CharField(label='パスワード再入力', widget=forms.PasswordInput)
+
+    class Meta:
+        model = Users
+        fields = ('password',)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        confirm_password = cleaned_data.get('confirm_password')
+
+        if password != confirm_password:
+            raise forms.ValidationError('パスワードが一致しません。')
+
+    def save(self, commit=False):
+        user = super().save(commit=False)
+
+        validate_password(self.cleaned_data.get('password'), user)
+        user.set_password(self.cleaned_data.get('password'))
+        user.save()
+
+        return user

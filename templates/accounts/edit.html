@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h2>Profile edit page</h2>
+	<hr />
+	{% if messages %}
+		{% for message in messages %}
+			<div>
+				{{ message }}
+			</div>
+		{% endfor %}
+	{% endif %}
+	<form method="post" enctype="multipart/form-data">
+		{% csrf_token %}
+		{{ user_edit_form.as_p }}
+		<input class="btn btn-primary" type="submit" value="Update" />
+	</form>
+	<a href="{% url 'accounts:change_password' %}">パスワード変更</a>
+{% endblock %}
