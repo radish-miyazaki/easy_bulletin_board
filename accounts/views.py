@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
 from . import forms
+from .models import UserActivateTokens
 
 
 def home(request):
@@ -31,4 +32,9 @@ def register(request):
 
 
 def activate_user(request, token):
-    pass
+    UserActivateTokens.objects.activate_user_by_token(token)
+    return render(
+        request,
+        'accounts/activate_user.html'
+    )
+
