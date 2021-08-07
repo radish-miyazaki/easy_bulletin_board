@@ -19,3 +19,14 @@ class Users(AbstractBaseUser, PermissionsMixin):
     # Meta data
     class Meta:
         db_table = 'users'
+
+
+class UserActivateTokens(models.Model):
+    token = models.UUIDField(db_index=True)
+    expired_at = models.DateTimeField()
+    user = models.ForeignKey(
+        'Users', on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        db_table = 'user_activate_tokens'

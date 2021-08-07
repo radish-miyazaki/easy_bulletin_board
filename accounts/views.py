@@ -28,3 +28,7 @@ def register(request):
             'register_form': register_form
         }
     )
+
+
+def activate_user(request, token):
+    pass
