@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+	<h2>{{ theme.title }}</h2>
+	<hr />
+
+	{% for comment in comments %}
+		<div class="col-1 offset-1">
+			{% if comment.user.picture %}
+			<img style="float: left;" src="{{ comment.user.picture.url }}" alt="comment user picture" width="50px" height="50px" />
+			{% endif %}
+		</div>
+		<div class="col-8 offset-2">
+			<p>Name: {{ comment.user.username }}</p>
+			<p>{{ comment.comment | linebreaks }}</p>
+		</div>
+		<div class="col-10 offset-1">
+			<hr />
+		</div>
+	{% endfor %}
+
+	{% if user.is_authenticated %}
+		<div class="col-4 offset-7">
+			<form method="post">
+				{% csrf_token %}
+				{{ post_comment_form.as_p }}
+				<input class="btn btn-primary" type="submit" value="Post" />
+			</form>
+		</div>
+	{% endif %}
+{% endblock %}

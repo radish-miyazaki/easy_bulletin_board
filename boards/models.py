@@ -20,6 +20,11 @@ class Themes(models.Model):
         db_table = 'themes'
 
 
+class CommentsManager(models.Manager):
+    def fetch_by_theme_id(self, theme_id):
+        return self.filter(theme_id=theme_id).order_by('id').all()
+
+
 class Comments(models.Model):
     comment = models.CharField(max_length=1000)
     user = models.ForeignKey(
@@ -30,6 +35,8 @@ class Comments(models.Model):
         'Themes',
         on_delete=models.CASCADE,
     )
+
+    objects = CommentsManager()
 
     class Meta:
         db_table = 'comments'
