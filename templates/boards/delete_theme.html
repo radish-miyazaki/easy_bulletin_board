@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+	<h3>Are you sure to delete?</h3>
+	<hr />
+	<form method="post">
+		{% csrf_token %}
+		{{ delete_theme_form.as_p }}
+		<input class="btn btn-danger" type="submit" value="Delete" />
+	</form>
+{% endblock %}
