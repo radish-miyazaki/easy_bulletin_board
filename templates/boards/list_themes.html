@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+	{% if messages %}
+		{% for message in messages %}
+			<div>{{ message.message }}</div>
+		{% endfor %}
+	{% endif %}
+	<h2>Board lists page</h2>
+	<hr />
+	<p>
+		<a class="navbar-brand" href="{% url 'boards:create_theme' %}">
+			Create
+		</a>
+	</p>
+	<table class="table table-striped table-hover">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Title</th>
+				<th>User</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for theme in themes %}
+				<tr>
+					<td>{{ forloop.counter }}</td>
+					<td>{{ theme.title }}</td>
+					<td>{{ theme.user }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}
