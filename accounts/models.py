@@ -32,22 +32,6 @@ class Users(AbstractBaseUser, PermissionsMixin):
     class Meta:
         db_table = 'users'
 
-
-class Comments(models):
-    comment = models.TextField()
-    user = models.ForeignKey(
-        'Users', on_delete=models.CASCADE,
-    )
-
-
-class Themes(models.Model):
-    title = models.CharField(max_length=50)
-    user = models.ForeignKey(
-        'Users', on_delete=models.CASCADE,
-    )
-    comments = models.ManyToManyField(Comments)
-
-
 """
  Classes to activate user.
 """
