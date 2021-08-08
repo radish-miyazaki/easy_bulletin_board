@@ -101,3 +101,10 @@ def activate_user(request, token):
         'accounts/activate_user.html'
     )
 
+
+# 404エラーが呼ばれてた時に実行される関数
+def show_error_page(request, exception):
+    return render(
+        request,
+        '404.html',
+    )
