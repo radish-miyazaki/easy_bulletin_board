@@ -23,8 +23,30 @@
 			<form method="post">
 				{% csrf_token %}
 				{{ post_comment_form.as_p }}
+				<input id="save_comment" class="btn btn-warning" type="button" value="Temporarily saved" />
 				<input class="btn btn-primary" type="submit" value="Post" />
 			</form>
 		</div>
 	{% endif %}
+{% endblock %}
+
+{% block javascript %}
+	<script>
+		$("#save_comment").click(() => {
+			let comment = $("#id_comment").val()
+
+			// コメントを一時保存するためのAjaxを定義
+			$.ajax({
+				url: "{% url 'boards:save_comment' %}",
+				type: 'GET',
+				data: {comment: comment, theme_id: "{{ theme.id }}"},
+				dataType: "json",
+				success: (json) => {
+					if (json.message) {
+						alert(json.message)
+					}
+				}
+			})
+		})
+	</script>
 {% endblock %}

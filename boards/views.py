@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from . import forms
 from .models import Themes, Comments
+from django.core.cache import cache
+from django.http import JsonResponse
 
 
 def create_theme(request):
@@ -76,18 +78,27 @@ def delete_theme(request, id):
 
 
 def post_comments(request, theme_id):
-    post_comment_form = forms.PostCommentForm(request.POST or None)
+    # キャッシュから値を取り出す
+    saved_comment = cache.get(f'saved_comment-theme_id={theme_id}-user_id={request.user.id}', '')
+
+    post_comment_form = forms.PostCommentForm(request.POST or None, initial={'comment': saved_comment})
     theme = get_object_or_404(Themes, id=theme_id)
     comments = Comments.objects.fetch_by_theme_id(theme_id)
 
     if post_comment_form.is_valid():
+        # 認証していないユーザーの場合エラーを返す
+        if not request.user.is_authenticated:
+            raise Http404
+
         # Commentsインスタンスのthemeフィールドにquery_param(theme_id)から取得したThemeインスタンスをセット
         post_comment_form.instance.theme = theme
         # 同様にログインユーザをセット
         post_comment_form.instance.user = request.user
         post_comment_form.save()
 
-        messages.success(request, 'コメントに成功しました')
+        # キャッシュから値を削除
+        cache.delete(f'saved_comment-theme_id={theme_id}-user_id={request.user.id}')
+
         return redirect('boards:post_comments', theme_id=theme_id)
 
     return render(
@@ -99,3 +110,18 @@ def post_comments(request, theme_id):
             'comments': comments,
         }
     )
+
+
+# Ajaxを利用して、Commentを一時的に保存する
+def save_comment(request):
+    if request.is_ajax():
+        comment = request.GET.get("comment")
+        theme_id = request.GET.get('theme_id')
+        if comment and theme_id:
+            # メモリキャッシュに一時的に保存する
+            cache.set(f'saved_comment-theme_id={theme_id}-user_id={request.user.id}', comment)
+
+            # JSONとして返す
+            return JsonResponse({
+                'message': '一時保存しました。'
+            })
