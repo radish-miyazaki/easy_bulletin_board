@@ -8,3 +8,11 @@ class CreateThemeForm(forms.ModelForm):
     class Meta:
         model = Themes
         fields = ('title',)
+
+
+class EditThemeForm(forms.ModelForm):
+    title = forms.CharField(label='タイトル')
+
+    class Meta:
+        model = Themes
+        fields = ('title',)

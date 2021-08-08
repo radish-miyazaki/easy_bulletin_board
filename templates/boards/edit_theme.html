@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+	<h2>Edit board page</h2>
+	<hr />
+	<form method="post">
+		{% csrf_token %}
+		{{ edit_theme_form.as_p }}
+		<input class="btn btn-primary" type="submit" value="Edit" />
+	</form>
+{% endblock %}

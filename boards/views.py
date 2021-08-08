@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+from django.http import Http404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from . import forms
 from .models import Themes, Comments
@@ -26,5 +27,28 @@ def list_themes(request):
         'boards/list_themes.html',
         context={
             'themes': themes,
+        }
+    )
+
+
+def edit_theme(request, id):
+    theme = get_object_or_404(Themes, id=id)
+
+    # 作成者とログインユーザが異なる場合は404エラーを起こす
+    if theme.user.id != request.user.id:
+        raise Http404
+    edit_theme_form = forms.EditThemeForm(request.POST or None, instance=theme)
+
+    if edit_theme_form.is_valid():
+        edit_theme_form.save()
+        messages.success(request, '掲示板を更新しました')
+        return redirect('boards:list_themes')
+
+    return render(
+        request,
+        'boards/edit_theme.html',
+        context={
+            'edit_theme_form': edit_theme_form,
+            'id': id,
         }
     )
